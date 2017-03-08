@@ -1,0 +1,3 @@
+rancher-server:
+    image: rancher/server
+
