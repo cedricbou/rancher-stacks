@@ -1,3 +1,29 @@
+nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports: 
+    - 80:80
+    - 443:443
+    volumes:
+    - /etc/nginx/certs:/etc/nginx/certs:ro
+    - /var/run/docker.sock:/tmp/docker.sock:ro
+    - /etc/nginx/vhost.d
+    - /usr/share/nginx/html
+    restart: always
+letsencrypt-nginx:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    volumes:
+    - /etc/nginx/certs:/etc/nginx/certs:rw
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    volumes_from:
+    - nginx-proxy
+    restart: always
 rancher-server:
     image: rancher/server
+    environment:
+    - VIRTUAL_HOST=${RANCHER_HOST}
+    - LETSENCRYPT_HOST=$Â{RANCHER_HOST}
+    - LETSENCRYPT_EMAIL=${EMAIL}
+    - VIRTUAL_PROTO=https
+    - VIRTUAL_PORT=8080
+    restart: always
 
